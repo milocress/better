@@ -1,8 +1,12 @@
-{-# LANGUAGE DeriveFoldable #-}
+{-# LANGUAGE RecordWildCards #-}
 module Better.Data.Graph
   ( Graph
   , empty
   , insert
+  , singleton
+  , rawData
+  , Edge(..)
+  , addEdgeToGraph
   ) where
 
 import Prelude hiding (lookup)
@@ -10,24 +14,42 @@ import Prelude hiding (lookup)
 import Data.IntMap (IntMap)
 import qualified Data.IntMap.Strict as IntMap
 
-import qualified Data.Set as Set
+import Better.Data.Vertex
 
-type Graph a e = IntMap.IntMap (Vertex a e)
+import Control.Monad.State
 
-data Vertex a e = Vertex { edges      :: Set.Set (Edge e)
-                         , vertexInfo :: a
-                         } deriving Show
+type GraphBackend t e = IntMap.IntMap (Vertex t e)
 
-data Edge e = Edge { begin    :: Int
-                   , end      :: Int
-                   , edgeInfo :: Int
-                   } deriving (Show, Eq, Ord)
+type Graph t e a = State (GraphBackend t e) a
 
-empty :: Graph a e
-empty = mempty
+-- | Empty graph
+empty :: Graph a e ()
+empty = put mempty
 
-insert :: a -> Graph a e -> Graph a e
-insert x g = IntMap.insert k v g where
-  v = Vertex mempty x
-  k = length g
+-- | Inserts a piece of data into a "Graph"
+insert :: (Ord e) => t -> Graph t e IntMap.Key
+insert x = do
+  k <- nextKey
+  let v = vertex x
+  modify $ IntMap.insert k v
+  return k
 
+-- | Creates a new "Graph" from a piece of data.
+singleton :: (Ord e) => t -> Graph t e IntMap.Key
+singleton x = insert x
+
+-- | Guarantees unique keys for items in the "Graph"
+nextKey :: Graph t e IntMap.Key
+-- nextKey = if null g then return 0 else succ . last . gets $ IntMap.keys
+nextKey = do
+  keys <- gets IntMap.keys
+  if null keys
+    then return 0
+    else return . succ . last $ keys
+
+addEdgeToGraph :: (Ord e) => Edge e -> Graph t e ()
+addEdgeToGraph e@Edge{..} = modify ( IntMap.adjust (addEdgeOut e) begin
+                                   . IntMap.adjust (addEdgeIn  e) end )
+
+rawData :: Graph t e a -> GraphBackend t e
+rawData g = execState g mempty

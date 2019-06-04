@@ -2,12 +2,14 @@ module Main where
 
 import qualified Better.Data.Graph as Graph
 
+import Data.Function ((&))
+
 main :: IO ()
-main = print my_graph
+main = print . Graph.rawData $ my_graph
 
-my_graph :: Graph.Graph String String
-my_graph = Graph.empty
-  & Graph.insert "test"
-  & Graph.insert "test2"
-
-a & b = b a
+my_graph :: Graph.Graph String String ()
+my_graph = do
+  ka <- Graph.insert "test"
+  kb <- Graph.insert "test2"
+  let e = Graph.Edge ka kb "Test Edge"
+  Graph.addEdgeToGraph e
