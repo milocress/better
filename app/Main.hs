@@ -1,15 +1,23 @@
 module Main where
 
 import qualified Better.Data.Graph as Graph
+import Better.Data.Graph.State
+import Better.Class.Select
+import Better
 
-import Data.Function ((&))
+import qualified Data.IntMap.Strict as IntMap
+
+import Control.Monad.State
+
+import System.Random
 
 main :: IO ()
-main = print . Graph.rawData $ my_graph
+main = rawData my_dorms >> return ()
 
-my_graph :: Graph.Graph String String ()
-my_graph = do
-  ka <- Graph.insert "test"
-  kb <- Graph.insert "test2"
-  let e = Graph.Edge ka kb "Test Edge"
-  Graph.addEdgeToGraph e
+my_dorms :: GraphT String Better IO ()
+my_dorms = do
+  fromListUnconnected ["Simmons", "Baker", "Random", "Macgregor", "New", "Next"]
+  replicateM 10 chooseOne
+  graph <- get
+  liftIO $ print graph -- get >>= print doesn't work for nebulous reasons.
+
