@@ -8,7 +8,8 @@ module Better.Data.Graph
   , Key
   , nextKey
   , fromListUnconnected
-  -- | Algorithms:
+  , inVals, outVals
+  , IntMap.mapWithKey, IntMap.adjust, IntMap.elems
   ) where
 
 import Prelude hiding (lookup)
@@ -46,3 +47,7 @@ addEdgeToGraph e@Edge{..} = ( IntMap.adjust (addEdgeOut e) begin
 
 fromListUnconnected :: (Ord e) => [a] -> Graph a e
 fromListUnconnected = foldr insert mempty
+
+inVals, outVals :: Graph a e -> Key -> [a]
+inVals  g k = vertexInfo <$> (g IntMap.!) <$> (inKeys  $ g IntMap.! k)
+outVals g k = vertexInfo <$> (g IntMap.!) <$> (outKeys $ g IntMap.! k)

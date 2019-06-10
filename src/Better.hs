@@ -17,11 +17,15 @@ chooseOne :: (Show t) => GraphT t Better IO ()
 chooseOne = do
   (ka, sa) <- randomItem
   (kb, sb) <- randomItem
-  liftIO . putStrLn
-    $ "Which one: " ++ (show sa) ++
-             " or " ++ (show sb) ++ "? (a/b)"
-  whichOne <- liftIO getLine
-  case whichOne of
-    "a" -> ka `betterThan` kb
-    "b" -> ka `worseThan`  ka
-    _   -> return () -- useful for when a user chooses not to make a comparison
+  if ka /= kb then do
+    liftIO . putStrLn
+      $ "Which one: " ++ (show sa) ++
+               " or " ++ (show sb) ++ "? (a/b)"
+    whichOne <- liftIO getLine
+    case whichOne of
+      "a" -> ka `betterThan` kb
+      "b" -> ka `worseThan`  ka
+      _   -> return () -- useful for when a user chooses not to make a comparison
+
+  else
+    chooseOne

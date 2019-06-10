@@ -8,11 +8,10 @@ import qualified Better.Data.Graph.State as StateGraph
 import Better.Data.Vertex
 import Control.Monad.State
 
-import Prelude hiding (lookup)
 import System.Random
 import Data.Maybe (fromJust)
 
-import Data.IntMap.Strict (keys, lookup)
+import Data.IntMap.Strict (keys, (!))
 
 instance Random ([a] -> a) where
   random g = (selector, g') where
@@ -25,7 +24,7 @@ instance Random (Graph.Graph t e -> (Graph.Key, t)) where
     selector =
       \l ->
           let key = (fst $ random g) $ keys l
-              payload = vertexInfo . fromJust . lookup key $ l
+              payload = vertexInfo (l ! key)
           in (key, payload)
     (_, g') = next g
 
