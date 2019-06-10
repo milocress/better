@@ -18,7 +18,7 @@ main :: IO ()
 main = do
   -- print simple_graph
   print $ cressRank 5 $ simple_graph
-  rawData my_dorms >>= print . cressRank 5
+  -- rawData my_dorms >>= print . cressRank 5
 
 my_dorms :: GraphT String Better IO ()
 my_dorms = do

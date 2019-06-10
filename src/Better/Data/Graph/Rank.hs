@@ -33,7 +33,6 @@ tick g = mapWithKey f g where
     let
       b =      inferiors g k
       t = b + (superiors g k)
-      -- n = 0.001
       s = snd $ vertexInfo v
       r = (b + s) / (t + 1)
     in putRank r v
