@@ -1,5 +1,15 @@
-name:    better
-version: "0.0.0"
+name:                better
+version:             0.1.0.0
+github:              "zephyrys/better"
+license:             BSD3
+author:              "Milo Cress"
+maintainer:          "cress@mit.edu"
+copyright:           "2019 Milo Cress"
+description:         Please see the README on GitHub at <https://github.com/zephyrys/better/README.md>
+
+extra-source-files:
+- README.md
+- ChangeLog.md
 
 dependencies:
 
@@ -42,6 +52,8 @@ dependencies:
 - case-insensitive
 - wai
 - foreign-store
+- mtl
+- random
 
 # The library contains all of our application code. The executable
 # defined below is just a thin wrapper.
@@ -62,7 +74,18 @@ library:
       - -O2
 
 # Runnable executable for our application
+  better:
+    main: main.hs
+    source-dirs: app
 executables:
+  better-exe:
+    main:                Main.hs
+    source-dirs:         app
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
   better:
     main: main.hs
     source-dirs: app
